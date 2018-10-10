@@ -41,7 +41,7 @@ def main(argv):
     parser.add_argument("-o","--output",help="Provide Destination Directory",dest='output')
     # check and ensure the config file is present otherwise create one. required for all further operations
     ds_dir=os.path.dirname(os.path.realpath(__file__))
-    config_file_path = os.path.join(ds_dir,"config.py")
+    config_file_path = "config.py"
     config_sample_path= os.path.join(ds_dir,"config_sample.py")
     print os.path.exists(config_file_path)
     if not os.path.exists(config_file_path):
