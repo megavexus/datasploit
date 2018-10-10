@@ -31,11 +31,10 @@ def __get_username_repos(username):
 	r = requests.get("%s/users/%s/repos?access_token=%s" % (GITHUB_BASE, username, access_token))
 	repos = []
 	response = json.loads(r.content)
-	if "message" in response and response["message"] == "Not Found":
+	if response.get("message") in ["Not Found", "Bad credentials"]:
 		return []
-	else:
-		for repo in response:
-			repos.append(repo['full_name'])
+	for repo in response:
+		repos.append(repo['full_name'])
 	return repos
 
 

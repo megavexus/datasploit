@@ -84,3 +84,6 @@ target/
 
 profile_pic/
 reports/json/
+
+venv
+.github

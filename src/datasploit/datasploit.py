@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import dep_check
-dep_check.check_dependency()
+#import dep_check
+#dep_check.check_dependency()
 
 import re
 import sys
@@ -16,32 +16,25 @@ import usernameOsint
 from tld import get_tld
 from netaddr import IPAddress,AddrFormatError
 
+desc = """
+____/ /____ _ / /_ ____ _ _____ ____   / /____   (_)/ /_
+/ __  // __ `// __// __ `// ___// __ \ / // __ \ / // __/
+/ /_/ // /_/ // /_ / /_/ /(__  )/ /_/ // // /_/ // // /_
+\__,_/ \__,_/ \__/ \__,_//____// .___//_/ \____//_/ \__/
+                            /_/
 
-def main(argv):
-    output=None
-    desc="""
-   ____/ /____ _ / /_ ____ _ _____ ____   / /____   (_)/ /_
-  / __  // __ `// __// __ `// ___// __ \ / // __ \ / // __/
- / /_/ // /_/ // /_ / /_/ /(__  )/ /_/ // // /_/ // // /_
- \__,_/ \__,_/ \__/ \__,_//____// .___//_/ \____//_/ \__/
-                               /_/
+        Open Source Assistant for #OSINT
+            www.datasploit.info
 
-            Open Source Assistant for #OSINT
-                www.datasploit.info
+"""
+epilog = """              Connect at Social Media: @datasploit
+            """
 
-    """
-    epilog="""              Connect at Social Media: @datasploit
-                """
-    # Set all parser arguments here.
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,description=textwrap.dedent(desc),epilog=epilog)
-    parser.add_argument("-i","--input",help="Provide Input",dest='single_target')
-    parser.add_argument("-f","--file",help="Provide Input",dest='file_target')
-    parser.add_argument("-a","--active",help="Run Active Scan attacks",dest='active',action="store_false")
-    parser.add_argument("-q","--quiet",help="Run scans in automated manner accepting default answers",dest='quiet',action="store_false")
-    parser.add_argument("-o","--output",help="Provide Destination Directory",dest='output')
+def run(config_file_path, single_input, file_input, output, active, quiet, parser):
+    global desc
+    
     # check and ensure the config file is present otherwise create one. required for all further operations
     ds_dir=os.path.dirname(os.path.realpath(__file__))
-    config_file_path = "config.py"
     config_sample_path= os.path.join(ds_dir,"config_sample.py")
     print os.path.exists(config_file_path)
     if not os.path.exists(config_file_path):
@@ -50,12 +43,7 @@ def main(argv):
         print "[+] A config file is added please follow guide at https://datasploit.github.io/datasploit/apiGeneration/ to fill API Keys for better results"
         # We can think about quiting at this point.
     # parse arguments in case they are provided.
-    x=parser.parse_args()
-    active=x.active
-    quiet=x.quiet
-    single_input=x.single_target
-    file_input=x.file_target
-    output=x.output
+    
     # if no target is provided print help and quit.
     if not (single_input or file_input):
         print "\nSingle target or file input required to run\n"
@@ -63,6 +51,7 @@ def main(argv):
         sys.exit()
     # Banner print
     print textwrap.dedent(desc)
+
     if single_input:
         try:
             auto_select_target(single_input, output)
@@ -82,11 +71,12 @@ def main(argv):
         except KeyboardInterrupt:
             print "\nCtrl+C called Quiting"
 
+
 def auto_select_target(target, output=None):
     """Auto selection logic"""
     print "Target: %s" % target
     try:
-        inp=IPAddress(target);
+        inp=IPAddress(target)
         if inp.is_private() or inp.is_loopback():
             print "Internal IP Detected : Skipping"
             sys.exit()
@@ -108,5 +98,38 @@ def auto_select_target(target, output=None):
     except:
         print "Unknown Error Occured"
 
+def main():
+    global desc, epilog
+
+    # Set all parser arguments here.
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=textwrap.dedent(desc),
+        epilog=epilog)
+
+    parser.add_argument(
+        "-i", "--input", help="Provide Input", dest='single_target')
+    parser.add_argument(
+        "-f", "--file", help="Provide Input", dest='file_target')
+    parser.add_argument("-a", "--active", help="Run Active Scan attacks",
+                        dest='active', action="store_false")
+    parser.add_argument("-q", "--quiet", help="Run scans in automated manner accepting default answers",
+                        dest='quiet', action="store_false")
+    parser.add_argument(
+        "-o", "--output", help="Provide Destination Directory", dest='output', default=None)
+    parser.add_argument("-c", "--config_file", help="Provide configuration file",
+                        dest='config_file_path', default="config.py")
+    args = parser.parse_args()
+
+    config_file_path = args.config_file_path
+    active = args.active
+    quiet = args.quiet
+    single_input = args.single_target
+    file_input = args.file_target
+    output = args.output
+
+    run(config_file_path, single_input, file_input, output, active, quiet, parser)
+
+
 if __name__ == "__main__":
-   main(sys.argv[1:])
+    main()

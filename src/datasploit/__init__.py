@@ -1,6 +1,15 @@
 from __future__ import absolute_import
 
-from . import username, emails, domain, ip, domainOsint, emailOsint, ipOsint, usernameOsint, datasploit
+import datasploit.username
+import datasploit.emails
+import datasploit.domain
+import datasploit.ip
+import datasploit.domainOsint
+import datasploit.emailOsint
+import datasploit.ipOsint
+import datasploit.usernameOsint
+import datasploit.datasploit
+
 
 __all__ = ["username", "emails", "domain", "ip", "domainOsint", "emailOsint", "ipOsint", "usernameOsint", "datasploit"]
 __title__ = 'datasploit'
