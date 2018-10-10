@@ -10,6 +10,7 @@ from datetime import datetime
 from collections import Counter
 from operator import itemgetter
 from prawcore.exceptions import NotFound
+from praw.exceptions import ClientException
 from termcolor import colored
 
 
@@ -165,10 +166,12 @@ def main(username):
     reddit_id = vault.get_key('reddit_id')
     reddit_secret = vault.get_key('reddit_secret')
     user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11'
-    reddit = praw.Reddit(client_id=reddit_id, client_secret=reddit_secret,
-                         user_agent=user_agent)
-    redditor = reddit.redditor(username)
+    
     try:
+        reddit = praw.Reddit(client_id=reddit_id, client_secret=reddit_secret,
+                             user_agent=user_agent)
+        redditor = reddit.redditor(username)
+
         user_stats['Redditor Stats'] = redditor_stats(redditor)
         user_stats['Top 10 Submitted to Subreddits'] = submission_stats(redditor)
         user_stats['Top 10 Commented in Subreddits'] = comment_stats(redditor)
@@ -176,7 +179,7 @@ def main(username):
             user_stats['Top Submissions'] = submissions_top(redditor)
             user_stats['Top Comments'] = comments_top(redditor)
             user_stats['Contriversial Posts'] = controversial_stats(redditor)
-    except NotFound as e:
+    except (ClientException, NotFound) as e:
         user_stats['Error'] = str(e)
         pass
     return user_stats
